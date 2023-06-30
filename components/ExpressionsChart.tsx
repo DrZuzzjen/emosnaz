@@ -1,8 +1,8 @@
 import { Pie } from 'react-chartjs-2';
 import { useEffect, useState } from 'react';
-import { ArcElement, Chart } from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
-Chart.register(ArcElement)
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 interface Expressions {
   [key: string]: number;
