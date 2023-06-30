@@ -1,33 +1,37 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useSWR from 'swr'
 import PersonComponent from '../components/Person'
 import type { Person } from '../interfaces'
 import * as faceapi from 'face-api.js' // Asegúrate de haber instalado face-api.js
+import VideoPlayer from '../components/VideoPlayer'
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
-const loadModels = async () => {
-  await faceapi.nets.ssdMobilenetv1.loadFromUri('/models')
-  await faceapi.nets.faceLandmark68Net.loadFromUri('/models')
-  await faceapi.nets.faceExpressionNet.loadFromUri('/models')
-}
-
 export default function Index() {
-  const { data, error, isLoading } = useSWR<Person[]>('/api/people', fetcher)
+  const [modelsLoaded, setModelsLoaded] = useState(false)
+ // crear un state "error" que se inicialice en falso tal cual la linea de arriba
+ const [error, setError ] = useState(false)
 
+ 
   useEffect(() => {
-    loadModels()
-  }, [])
+    Promise.all([
+      faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
+      faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+      faceapi.nets.faceExpressionNet.loadFromUri('/models')
+    ])
+    .then(() => {
+      setModelsLoaded(true)
+    })
+    .catch((error) => {
+      setError(true)
+      console.error('Hubo un error al cargar los modelos de face-api.js: ', error)
+    });
+  }, []);
 
   if (error) return <div>Failed to load</div>
-  if (isLoading) return <div>Loading...</div>
-  if (!data) return null
+  if (!modelsLoaded) return <div>Loading models...</div>
 
   return (
-    <ul>
-      {data.map((p) => (
-        <PersonComponent key={p.id} person={p} />
-      ))}
-    </ul>
+    <VideoPlayer videoSrc="/src_videos/1.mp4" />
   )
 }
