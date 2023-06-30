@@ -3,11 +3,11 @@ import * as faceapi from 'face-api.js'
 
 
 interface VideoPlayerProps {
-    videoSrc: string;
+  videoSrc: string;
+  onDetectionsData?: (data: any) => void; // Agrega esta línea
 }
 
-export default function VideoPlayer({ videoSrc }: VideoPlayerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null)
+export default function VideoPlayer({ videoSrc, onDetectionsData }: VideoPlayerProps) {  const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
@@ -43,7 +43,10 @@ export default function VideoPlayer({ videoSrc }: VideoPlayerProps) {
         context.stroke()
 
         // Imprime algunas detecciones en la consola
-        console.log('Detecciones:', detection)
+        if (onDetectionsData) {
+          onDetectionsData(detections);
+        }
+        //console.log('Detecciones:', detection)
         requestAnimationFrame(runFaceDetection)
 
       })
