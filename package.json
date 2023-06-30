@@ -6,9 +6,11 @@
     "start": "next start"
   },
   "dependencies": {
+    "chart.js": "^4.3.0",
     "face-api.js": "^0.22.2",
     "next": "latest",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "swr": "^2.0.0"
   },
