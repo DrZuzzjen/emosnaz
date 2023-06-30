@@ -7,9 +7,6 @@ interface VideoPlayerProps {
   onDetectionsData?: (data: any) => void; // Agrega esta línea
 }
 
-
-
-
 export default function VideoPlayer({ videoSrc, onDetectionsData }: VideoPlayerProps) {  const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
