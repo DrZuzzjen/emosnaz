@@ -3,16 +3,28 @@
 import { useEffect, useState } from 'react'
 import * as faceapi from 'face-api.js' // Asegúrate de haber instalado face-api.js
 import VideoPlayer from '../components/VideoPlayer'
+import { ExpressionsChart } from '../components/ExpressionsChart'
 
 export default function Index() {
+
+  
+const initialAverage = {
+  "neutral": 0,
+  "happy": 0,
+  "sad": 0,
+  "angry": 0,
+  "fearful": 0,
+  "disgusted": 0,
+  "surprised": 0
+}
   const [modelsLoaded, setModelsLoaded] = useState(false)
  // crear un state "error" que se inicialice en falso tal cual la linea de arriba
  const [error, setError ] = useState(false)
- const [detectionsData, setDetectionsData] = useState(null); // Para almacenar los datos de detección
+ const [detectionsData, setDetectionsData] = useState(initialAverage); // Para almacenar los datos de detección
 
  
  const handleDetectionsData = (data: any) => {
-  setDetectionsData(data);
+  setDetectionsData(data[0].expressions);
   // Aquí puedes hacer algo con los datos de detección, por ejemplo, console.log
   console.log('Datos de detección actualizados:', data);
 };
@@ -36,6 +48,9 @@ export default function Index() {
   if (!modelsLoaded) return <div>Loading models...</div>
 
   return (
+    <div>
 <VideoPlayer videoSrc="/src_videos/3.mp4" onDetectionsData={handleDetectionsData} />
+<ExpressionsChart expressions={detectionsData}></ExpressionsChart>
+    </div>
   )
 }
