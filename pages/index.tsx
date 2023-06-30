@@ -4,14 +4,19 @@ import { useEffect, useState } from 'react'
 import * as faceapi from 'face-api.js' // Asegúrate de haber instalado face-api.js
 import VideoPlayer from '../components/VideoPlayer'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
 export default function Index() {
   const [modelsLoaded, setModelsLoaded] = useState(false)
  // crear un state "error" que se inicialice en falso tal cual la linea de arriba
  const [error, setError ] = useState(false)
+ const [detectionsData, setDetectionsData] = useState(null); // Para almacenar los datos de detección
 
  
+ const handleDetectionsData = (data: any) => {
+  setDetectionsData(data);
+  // Aquí puedes hacer algo con los datos de detección, por ejemplo, console.log
+  console.log('Datos de detección actualizados:', data);
+};
+
   useEffect(() => {
     Promise.all([
       faceapi.nets.ssdMobilenetv1.loadFromUri('/models'),
@@ -31,6 +36,6 @@ export default function Index() {
   if (!modelsLoaded) return <div>Loading models...</div>
 
   return (
-    <VideoPlayer videoSrc="/src_videos/3.mp4" />
+<VideoPlayer videoSrc="/src_videos/3.mp4" onDetectionsData={handleDetectionsData} />
   )
 }
