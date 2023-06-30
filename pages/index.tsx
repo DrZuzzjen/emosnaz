@@ -31,6 +31,6 @@ export default function Index() {
   if (!modelsLoaded) return <div>Loading models...</div>
 
   return (
-    <VideoPlayer videoSrc="/src_videos/1.mp4" />
+    <VideoPlayer videoSrc="/src_videos/3.mp4" />
   )
 }
