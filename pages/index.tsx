@@ -5,9 +5,12 @@ import * as faceapi from 'face-api.js' // Asegúrate de haber instalado face-api
 import VideoPlayer from '../components/VideoPlayer'
 import { ExpressionsChart } from '../components/ExpressionsChart'
 
-export default function Index() {
+import fs from 'fs';
+import path from 'path';
 
+export default function Index({ videos }) {  // Recibiendo la prop videos
 
+  const initialVideo = (videos && videos.length > 0) ? videos[0] : '';
   const initialAverage = {
     "neutral": 0,
     "happy": 0,
@@ -20,6 +23,7 @@ export default function Index() {
   const [modelsLoaded, setModelsLoaded] = useState(false)
   // crear un state "error" que se inicialice en falso tal cual la linea de arriba
   const [error, setError] = useState(false)
+  const [selectedVideo, setSelectedVideo] = useState(initialVideo);
   const [detectionsData, setDetectionsData] = useState(initialAverage); // Para almacenar los datos de detección
 
 
@@ -27,6 +31,10 @@ export default function Index() {
     setDetectionsData(data[0].expressions);
     // Aquí puedes hacer algo con los datos de detección, por ejemplo, console.log
     console.log('Datos de detección actualizados:', data);
+  };
+
+  const handleVideoChange = (event) => {
+    setSelectedVideo(event.target.value);
   };
 
   useEffect(() => {
@@ -49,10 +57,36 @@ export default function Index() {
 
   return (
     <div>
-      <VideoPlayer videoSrc="/src_videos/3.mp4" onDetectionsData={handleDetectionsData} />
-      <div style={{ position: 'relative', width: '640px', height: '480px' }}>
-        <ExpressionsChart expressions={detectionsData}></ExpressionsChart>
-      </div>
+    {/* Añade una clave al componente VideoPlayer que sea igual a selectedVideo */}
+    <VideoPlayer key={selectedVideo} videoSrc={selectedVideo} onDetectionsData={handleDetectionsData} />
+    <div style={{ position: 'relative', width: '640px', height: '480px' }}>
+    <div>
+      <h2>Select Source: </h2>
+    <select value={selectedVideo} onChange={handleVideoChange}>
+        {videos.map((video, index) => (
+            <option key={index} value={video}>
+                {video}
+            </option>
+        ))}
+    </select>
     </div>
+        <ExpressionsChart expressions={detectionsData}></ExpressionsChart>
+    </div>
+</div>
   )
+}
+
+export async function getServerSideProps() {
+  const videosDir = path.join(process.cwd(), 'public', 'src_videos');
+  const filenames = fs.readdirSync(videosDir);
+
+  const videos = filenames.map(filename => {
+    return '/src_videos/' + filename
+  });
+
+  return {
+    props: {
+      videos,
+    },
+  };
 }
