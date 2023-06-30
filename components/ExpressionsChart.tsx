@@ -10,6 +10,7 @@ interface Expressions {
 
 interface ExpressionsChartProps {
   expressions: Expressions;
+  video: string;
 }
 
 const initialAverage = {
@@ -22,7 +23,7 @@ const initialAverage = {
   "surprised": 0
 }
 
-export const ExpressionsChart: React.FC<ExpressionsChartProps> = ({ expressions }) => {
+export const ExpressionsChart: React.FC<ExpressionsChartProps> = ({ expressions, video }) => {
   const [averageExpressions, setAverageExpressions] = useState<Expressions>(initialAverage);
   const [count, setCount] = useState(1);
 
@@ -34,6 +35,12 @@ export const ExpressionsChart: React.FC<ExpressionsChartProps> = ({ expressions 
     setAverageExpressions(newAverageExpressions);
     setCount(count + 1);
   }, [expressions]);
+
+  // Añade este useEffect para reiniciar los estados cuando cambia el video
+  useEffect(() => {
+    setAverageExpressions(initialAverage);
+    setCount(1);
+  }, [video]);
 
   const data = {
     labels: Object.keys(averageExpressions),

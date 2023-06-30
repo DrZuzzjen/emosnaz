@@ -70,7 +70,7 @@ export default function Index({ videos }) {  // Recibiendo la prop videos
         ))}
     </select>
     </div>
-        <ExpressionsChart expressions={detectionsData}></ExpressionsChart>
+    <ExpressionsChart expressions={detectionsData} video={selectedVideo} />
     </div>
 </div>
   )
