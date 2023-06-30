@@ -1,7 +1,6 @@
+///index.tsx
+
 import { useEffect, useState } from 'react'
-import useSWR from 'swr'
-import PersonComponent from '../components/Person'
-import type { Person } from '../interfaces'
 import * as faceapi from 'face-api.js' // Asegúrate de haber instalado face-api.js
 import VideoPlayer from '../components/VideoPlayer'
 

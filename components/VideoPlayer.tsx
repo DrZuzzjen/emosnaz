@@ -21,10 +21,15 @@ export default function VideoPlayer({ videoSrc }: VideoPlayerProps)
     const runFaceDetection = async () => {
       if (!context) return
 
-      context.drawImage(video, 0, 0, video.width, video.height)
+      // Aseguramos que el tamaño del canvas coincide con el del video
+      canvas.width = video.videoWidth
+      canvas.height = video.videoHeight
+
+      // Limpiamos el canvas antes de dibujar las detecciones
+      context.clearRect(0, 0, canvas.width, canvas.height)
 
       const detections = await faceapi
-        .detectAllFaces(canvas)
+        .detectAllFaces(video) // Detecta en el video, no en el canvas
         .withFaceLandmarks()
         .withFaceExpressions()
 
@@ -33,22 +38,39 @@ export default function VideoPlayer({ videoSrc }: VideoPlayerProps)
         height: canvas.height,
       })
 
-      faceapi.draw.drawDetections(canvas, resizedDetections)
+      // Dibujamos los cuadrados rojos para cada detección
+      resizedDetections.forEach(detection => {
+        const box = detection.detection.box
+        context.beginPath()
+        context.rect(box.x, box.y, 50, 50) // Cambiamos el tamaño del cuadrado a 50x50
+        context.lineWidth = 2
+        context.strokeStyle = 'red'
+        context.fillStyle = 'red'
+        context.stroke()
+
+        // Imprime algunas detecciones en la consola
+        console.log('Detecciones:', detection)
+      })
+
+      // Dibujamos los landmarks y las expresiones faciales
       faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
       faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
 
       requestAnimationFrame(runFaceDetection)
     }
 
-    runFaceDetection()
+    video.onloadeddata = runFaceDetection
   }, [])
 
   return (
     <div>
-      <video ref={videoRef} autoPlay muted loop>
-        <source src={videoSrc} type="video/mp4" />
+      <video ref={videoRef} autoPlay muted loop controls={true} width="640" height="420">
+      {/*  Modify the source so it has a defined width and height of 640x420 and the video controlers for play and pause*/}
+
+      <source src={videoSrc} type="video/mp4"  />
+      
       </video>
-      <canvas ref={canvasRef} />
+      <canvas ref={canvasRef} style={{position: 'absolute'}} /> {/* Superponemos el canvas al video */}
     </div>
   )
 }
