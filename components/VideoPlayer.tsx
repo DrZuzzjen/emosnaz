@@ -19,13 +19,6 @@ export default function VideoPlayer({ videoSrc }: VideoPlayerProps) {
 
         const runFaceDetection = async () => {
             if (!context) return
-
-            // Aseguramos que el tamaño del canvas coincide con el del video
-
-
-            // Limpiamos el canvas antes de dibujar las detecciones
-            //
-
             const detections = await faceapi
                 .detectAllFaces(video) // Detecta en el video, no en el canvas
                 .withFaceLandmarks()
@@ -36,6 +29,7 @@ export default function VideoPlayer({ videoSrc }: VideoPlayerProps) {
                 height: canvas.height,
             })
 
+            
             // Dibujamos los cuadrados rojos para cada detección
             resizedDetections.forEach(detection => {
                 const box = detection.detection.box
@@ -47,13 +41,16 @@ export default function VideoPlayer({ videoSrc }: VideoPlayerProps) {
                 context.stroke()
                 // Imprime algunas detecciones en la consola
                // console.log('Detecciones:', detection)
+                requestAnimationFrame(runFaceDetection)
+
             })
+
 
             // Dibujamos los landmarks y las expresiones faciales
             faceapi.draw.drawFaceLandmarks(canvas, resizedDetections)
             faceapi.draw.drawFaceExpressions(canvas, resizedDetections)
-            //context.clearRect(0, 0, canvas.width, canvas.height)
-            requestAnimationFrame(runFaceDetection)
+            //
+            //setTimeout(runFaceDetection, 10) // Ajusta el valor de tiempo (en milisegundos) según tus necesidades
         }
 
         video.onloadeddata = () => {
@@ -64,12 +61,12 @@ export default function VideoPlayer({ videoSrc }: VideoPlayerProps) {
     }, [])
 
     return (
-        <div>
+        <div style={{ position: 'relative', width: '640px', height: '480px' }}>
             <video ref={videoRef} autoPlay muted loop controls={true}>
                 <source src={videoSrc} type="video/mp4" />
             </video>
             <div>
-                <canvas ref={canvasRef} />
+                <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0 }} />
             </div>
         </div>
     )
